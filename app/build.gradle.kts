@@ -39,6 +39,14 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        //jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        freeCompilerArgs.add("-Xexplicit-backing-fields")
+        //freeCompilerArgs.add("-XXLanguage:+ExplicitBackingFields")
+    }
+}
+
 dependencies {
     implementation(libs.play.services.wearable)
     implementation(platform(libs.compose.bom))
@@ -55,4 +63,8 @@ dependencies {
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+
+    // Datastore + Coroutines
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlinx.coroutines.android)
 }
