@@ -1,5 +1,6 @@
 package com.linuxh2o.whiterose.presentation.scheduler
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -7,7 +8,6 @@ import android.content.Intent
 import android.util.Log
 import com.linuxh2o.whiterose.presentation.data.ChimeState
 import com.linuxh2o.whiterose.presentation.receiver.ChimeReceiver
-
 
 class ChimeScheduler(private val context: Context) {
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
@@ -21,7 +21,6 @@ class ChimeScheduler(private val context: Context) {
     fun schedule(intervalInMin: Int): ChimeState {
         val nextChimeAt = System.currentTimeMillis() + intervalInMin.toMillis()
 
-        // TODO: setExact()
         setExact(nextChimeAt)
 
         return ChimeState(
@@ -68,6 +67,7 @@ class ChimeScheduler(private val context: Context) {
         )
     }
 
+    @SuppressLint("MissingPermission")
     private fun setExact(triggerAtMs: Long) {
         try {
             alarmManager.setExactAndAllowWhileIdle(

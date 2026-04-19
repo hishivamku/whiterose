@@ -24,8 +24,6 @@ class ChimeReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
 
-        Log.d("ChimeReceiver", "onReceive: fired")
-
         val pendingResult = goAsync()
         val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
@@ -61,34 +59,32 @@ class ChimeReceiver: BroadcastReceiver() {
     }
 
     private suspend fun vibrate(context: Context) {
-        Log.d("ChimeReceiver", "onReceive: vibrator")
-
         delay(100L)
 
         val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = context.getSystemService(VibratorManager::class.java)
-            vibratorManager.defaultVibrator
+            context.getSystemService(VibratorManager::class.java).defaultVibrator
         } else {
-            context.getSystemService(Vibrator::class.java)
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
 
-        val pattern = longArrayOf(0, 250, 180, 250) // ms: wait, on, wait, on
-        val amplitudes = intArrayOf(0, 220, 0, 220) // strength per segment
+        val effect = VibrationEffect.createWaveform(
+            longArrayOf(0, 250, 200, 250, 200, 250, 200),
+            intArrayOf( 0, 255,   0, 255,   0, 255,   0),
+            -1
+        )
 
-        val effect = if (vibrator.hasAmplitudeControl()) {
-            VibrationEffect.createWaveform(
-                longArrayOf(0, 250, 180, 250),
-                intArrayOf(0, 220, 0, 220),
-                -1
-            )
+        // Vibration not working after 1st call fix.
+        // Attributes tells the OS this is alarm class vibration.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val attributes = android.os.VibrationAttributes.Builder()
+                .setUsage(android.os.VibrationAttributes.USAGE_ALARM)
+                .build()
+            vibrator.vibrate(effect, attributes)
         } else {
-            VibrationEffect.createWaveform(
-                longArrayOf(0, 250, 180, 250),
-                -1
-            )
+            vibrator.vibrate(effect)
         }
 
-        vibrator.vibrate(effect)
+        Log.d("ChimeReceiver", "vibrate() returned")
     }
 
     private suspend fun playChime(context: Context) {
@@ -104,13 +100,14 @@ class ChimeReceiver: BroadcastReceiver() {
         }
 
         mediaPlayer.setOnCompletionListener {
-            Log.d("ChimeReceiver", "playChime: completed")
+            it.reset()
             it.release()
+            Log.d("ChimeReceiver", "playChime: completed")
         }
 
         mediaPlayer.start()
 
         val durationMs = mediaPlayer.duration.toLong()
-        delay(durationMs + 300L)
+        delay(durationMs + 500L)
     }
 }

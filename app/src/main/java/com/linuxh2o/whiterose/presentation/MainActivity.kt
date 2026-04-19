@@ -24,12 +24,6 @@ import com.linuxh2o.whiterose.presentation.theme.WhiteroseTheme
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
 
-    private val requestNotificationPermission = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        // TODO: Show rational / notify user 
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -63,9 +57,9 @@ class MainActivity : ComponentActivity() {
                 this, Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
 
-            if (!isGranted) {
+            /*if (!isGranted) {
                 requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
+            }*/
         }
     }
 }
