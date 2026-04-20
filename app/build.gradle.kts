@@ -15,14 +15,14 @@ android {
         applicationId = "com.linuxh2o.whiterose"
         minSdk = 30
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
     }
 
     buildTypes {
         debug {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -74,4 +74,7 @@ dependencies {
     // Datastore + Coroutines
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.coroutines.android)
+
+    // Splash Screen
+    implementation("androidx.core:core-splashscreen:1.2.0")
 }

@@ -16,6 +16,7 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.wear.compose.material3.AppScaffold
 import com.linuxh2o.whiterose.presentation.presentation.MainScreen
 import com.linuxh2o.whiterose.presentation.presentation.MainViewModel
@@ -25,6 +26,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
             val state by viewModel.chimeState.collectAsState()

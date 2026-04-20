@@ -3,6 +3,7 @@ package com.linuxh2o.whiterose.presentation.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.linuxh2o.whiterose.presentation.data.ChimePref
 import com.linuxh2o.whiterose.presentation.scheduler.ChimeScheduler
 import kotlinx.coroutines.CoroutineScope
@@ -13,27 +14,30 @@ import kotlinx.coroutines.launch
 open class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent == null) return
-        if (intent.action != Intent.ACTION_BOOT_COMPLETED) return
 
-        val pendingResult = goAsync()
+        when(intent.action){
+            Intent.ACTION_BOOT_COMPLETED -> {
+                val pendingResult = goAsync()
 
-        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-            try {
-                val prefs = ChimePref(context)
-                val state = prefs.read()
+                CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+                    try {
+                        val prefs = ChimePref(context)
+                        val state = prefs.read()
 
-                if (!state.isActive) return@launch
+                        if (!state.isActive) return@launch
 
-                val scheduler = ChimeScheduler(context)
-                val updatedState = scheduler.rescheduleAfterBoot(state)
+                        val scheduler = ChimeScheduler(context)
+                        val updatedState = scheduler.rescheduleAfterBoot(state)
 
-                // Persist state for the next scheduled chime
-                prefs.save(updatedState)
-            } finally {
-                // Release it or it will result in ANR in 10 seconds.
-                pendingResult.finish()
+                        // Persist state for the next scheduled chime
+                        prefs.save(updatedState)
+                    } finally {
+                        // Release it or it will result in ANR in 10 seconds.
+                        pendingResult.finish()
+                    }
+                }
             }
+            else -> Log.d("WatchStartup", "Else unknown event: ${intent.action.toString()}")
         }
-
     }
 }
