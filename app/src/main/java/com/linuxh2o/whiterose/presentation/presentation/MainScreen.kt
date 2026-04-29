@@ -6,8 +6,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,7 +21,6 @@ import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
-import androidx.wear.compose.material3.ScrollIndicator
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.ui.tooling.preview.WearPreviewLargeRound
 import com.linuxh2o.whiterose.presentation.data.ChimeState
@@ -47,7 +47,7 @@ fun MainScreen(
             modifier = Modifier.fillMaxSize(),
             state = listState,
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            //verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             item {
                 Text(
@@ -65,32 +65,36 @@ fun MainScreen(
                         MaterialTheme.colorScheme.primary
                     else
                         MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
 
             // Interval list, two intervals in a row
-            items(intervalOptions.chunked(2)) { pair ->
+            items(intervalOptions) { minute ->
                 IntervalRow(
-                    pair = pair,
+                    minute = minute,
                     selectedInterval = state.intervalMinutes,
                     onIntervalSelected = onIntervalSelected
                 )
             }
 
             item {
-                //Spacer(modifier = Modifier.height(4.dp))
-
                 Button(
                     onClick = onToggle,
-                    modifier = Modifier.fillMaxWidth(.7f),
+                    //modifier = Modifier.fillMaxWidth(.7f),
+                    modifier = Modifier
+                        .fillMaxWidth(.75f)
+                        .padding(top = 8.dp),
                     colors = if (state.isActive)
                         ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error,
                             contentColor   = MaterialTheme.colorScheme.onError
                         )
                     else
-                        ButtonDefaults.buttonColors()
+                        ButtonDefaults.buttonColors(
+                            containerColor = Color.Cyan
+                        )
                 ) {
                     Text(
                         text = if (state.isActive) "Stop" else "Start",
@@ -99,14 +103,47 @@ fun MainScreen(
                     )
                 }
             }
-
-            item { Spacer(modifier = Modifier.height(8.dp)) }
         }
     }
 }
 
 @Composable
 private fun IntervalRow(
+    minute: Int,
+    selectedInterval: Int,
+    onIntervalSelected: (Int) -> Unit
+) {
+    //val isSelected = remember { minute == selectedInterval }
+    val isSelected =  minute == selectedInterval
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(
+            onClick = { onIntervalSelected(minute) },
+            modifier = Modifier.fillMaxWidth(.75f),
+            colors = if (isSelected) {
+                ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFCFB079)
+                )
+            } else {
+                ButtonDefaults.filledTonalButtonColors()
+            }
+        ) {
+            Text(
+                text = "$minute min",
+                style = MaterialTheme.typography.labelSmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun IntervalRow2(
     pair: List<Int>,
     selectedInterval: Int,
     onIntervalSelected: (Int) -> Unit
@@ -120,7 +157,8 @@ private fun IntervalRow(
 
             Button(
                 onClick = { onIntervalSelected(minutes) },
-                modifier = Modifier.size(width = 72.dp, height = 36.dp),
+                modifier = Modifier.fillMaxWidth(),
+                //modifier = Modifier.size(width = 72.dp, height = 36.dp),
                 colors = if (isSelected) {
                     ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFCFB079)

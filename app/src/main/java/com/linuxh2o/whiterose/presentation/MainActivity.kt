@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.wear.compose.material3.AppScaffold
+import androidx.wear.compose.material3.ScreenScaffold
 import com.linuxh2o.whiterose.presentation.presentation.MainScreen
 import com.linuxh2o.whiterose.presentation.presentation.MainViewModel
 import com.linuxh2o.whiterose.presentation.theme.WhiteroseTheme
@@ -32,7 +33,7 @@ class MainActivity : ComponentActivity() {
             val state by viewModel.chimeState.collectAsState()
 
             WhiteroseTheme {
-                AppScaffold {
+                AppScaffold{
                     MainScreen(
                         state = state,
                         intervalOptions = viewModel.intervalOptions,
@@ -49,6 +50,8 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 }
+                //ScreenScaffold{}
+                //AppScaffold {}
             }
         }
     }
